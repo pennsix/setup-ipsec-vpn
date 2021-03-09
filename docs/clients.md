@@ -2,7 +2,7 @@
 
 *Read this in other languages: [English](clients.md), [简体中文](clients-zh.md).*
 
-**Note: You may also connect using the faster [IPsec/XAuth mode](clients-xauth.md), or set up [IKEv2](ikev2-howto.md).**
+**Note:** You may also [set up IKEv2](ikev2-howto.md) (recommended), or connect using the faster [IPsec/XAuth mode](clients-xauth.md).
 
 After <a href="https://github.com/hwdsl2/setup-ipsec-vpn" target="_blank">setting up your own VPN server</a>, follow these steps to configure your devices. IPsec/L2TP is natively supported by Android, iOS, OS X, and Windows. There is no additional software to install. Setup should only take a few minutes. In case you are unable to connect, first check to make sure the VPN credentials were entered correctly.
 
@@ -36,7 +36,11 @@ After <a href="https://github.com/hwdsl2/setup-ipsec-vpn" target="_blank">settin
 1. Click **OK** to close the **Advanced settings**.
 1. Click **OK** to save the VPN connection details.
 
-**Note:** A **one-time registry change** is required before connecting. See details below.
+**Note:** This <a href="#windows-error-809">one-time registry change</a> is required if the VPN server and/or client is behind NAT (e.g. home router).
+
+To connect to the VPN: Click on the wireless/network icon in your system tray, select the new VPN entry, and click **Connect**. If prompted, enter `Your VPN Username` and `Password`, then click **OK**. You can verify that your traffic is being routed properly by <a href="https://www.google.com/search?q=my+ip" target="_blank">looking up your IP address on Google</a>. It should say "Your public IP address is `Your VPN Server IP`".
+
+If you get an error when trying to connect, see <a href="#troubleshooting">Troubleshooting</a>.
 
 Alternatively, instead of following the steps above, you may create the VPN connection using these Windows PowerShell commands. Replace `Your VPN Server IP` and `Your VPN IPsec PSK` with your own values, enclosed in single quotes:
 
@@ -96,7 +100,7 @@ If you get an error when trying to connect, see <a href="#troubleshooting">Troub
 1. Click **OK**.
 1. Check the **Show VPN status in menu bar** checkbox.
 1. **(Important)** Click the **Advanced** button and make sure the **Send all traffic over VPN connection** checkbox is checked.
-1. Click the **TCP/IP** tab, and make sure **Link-local only** is selected in the **Configure IPv6** section.
+1. **(Important)** Click the **TCP/IP** tab, and make sure **Link-local only** is selected in the **Configure IPv6** section.
 1. Click **OK** to close the Advanced settings, and then click **Apply** to save the VPN connection information.
 
 To connect to the VPN: Use the menu bar icon, or go to the Network section of System Preferences, select the VPN and choose **Connect**. You can verify that your traffic is being routed properly by <a href="https://www.google.com/search?q=my+ip" target="_blank">looking up your IP address on Google</a>. It should say "Your public IP address is `Your VPN Server IP`".
@@ -167,7 +171,7 @@ If you get an error when trying to connect, see <a href="#troubleshooting">Troub
 
 ### Ubuntu Linux
 
-Ubuntu 18.04 (and newer) users can install the <a href="https://packages.ubuntu.com/search?keywords=network-manager-l2tp-gnome" target="_blank">network-manager-l2tp-gnome</a> package, then configure the IPsec/L2TP VPN client using the GUI. Ubuntu 16.04 users may need to add the `nm-l2tp` PPA, read more <a href="https://medium.com/@hkdb/ubuntu-16-04-connecting-to-l2tp-over-ipsec-via-network-manager-204b5d475721" target="_blank">here</a>.
+Ubuntu 18.04 (and newer) users can install the <a href="https://packages.ubuntu.com/search?keywords=network-manager-l2tp-gnome" target="_blank">network-manager-l2tp-gnome</a> package using `apt`, then configure the IPsec/L2TP VPN client using the GUI. Ubuntu 16.04 users may need to add the `nm-l2tp` PPA, read more <a href="https://medium.com/@hkdb/ubuntu-16-04-connecting-to-l2tp-over-ipsec-via-network-manager-204b5d475721" target="_blank">here</a>.
 
 1. Go to Settings -> Network -> VPN. Click the **+** button.
 1. Select **Layer 2 Tunneling Protocol (L2TP)**.
@@ -182,20 +186,22 @@ Ubuntu 18.04 (and newer) users can install the <a href="https://packages.ubuntu.
 1. Leave the **Gateway ID** field blank.
 1. Enter `Your VPN IPsec PSK` for the **Pre-shared key**.
 1. Expand the **Advanced** section.
-1. Enter `aes128-sha1-modp2048!` for the **Phase1 Algorithms**.
-1. Enter `aes128-sha1-modp2048!` for the **Phase2 Algorithms**.
+1. Enter `aes128-sha1-modp2048` for the **Phase1 Algorithms**.
+1. Enter `aes128-sha1` for the **Phase2 Algorithms**.
 1. Click **OK**, then click **Add** to save the VPN connection information.
 1. Turn the **VPN** switch ON.
 
 Once connected, you can verify that your traffic is being routed properly by <a href="https://www.google.com/search?q=my+ip" target="_blank">looking up your IP address on Google</a>. It should say "Your public IP address is `Your VPN Server IP`".
 
+If you get an error when trying to connect, try <a href="https://github.com/nm-l2tp/NetworkManager-l2tp/blob/master/README.md#issue-with-not-stopping-system-xl2tpd-service" target="_blank">this fix</a>.
+
 ### Fedora and CentOS
 
-Fedora 28 (and newer) and CentOS 7 users can connect using the faster [IPsec/XAuth](clients-xauth.md#linux) mode.
+Fedora 28 (and newer) and CentOS 8/7 users can connect using the faster [IPsec/XAuth](clients-xauth.md#linux) mode.
 
 ### Other Linux
 
-First check <a href="https://github.com/nm-l2tp/network-manager-l2tp/wiki/Prebuilt-Packages" target="_blank">here</a> to see if the `network-manager-l2tp` and `network-manager-l2tp-gnome` packages are available for your Linux distribution. If yes, install them (select strongSwan) and follow the instructions above. Alternatively, you may [configure Linux VPN clients using the command line](#configure-linux-vpn-clients-using-the-command-line).
+First check <a href="https://github.com/nm-l2tp/NetworkManager-l2tp/wiki/Prebuilt-Packages" target="_blank">here</a> to see if the `network-manager-l2tp` and `network-manager-l2tp-gnome` packages are available for your Linux distribution. If yes, install them (select strongSwan) and follow the instructions above. Alternatively, you may [configure Linux VPN clients using the command line](#configure-linux-vpn-clients-using-the-command-line).
 
 ## Troubleshooting
 
@@ -206,15 +212,15 @@ First check <a href="https://github.com/nm-l2tp/network-manager-l2tp/wiki/Prebui
 * [Windows 10 connecting](#windows-10-connecting)
 * [Windows 10 upgrades](#windows-10-upgrades)
 * [Windows 8/10 DNS leaks](#windows-810-dns-leaks)
-* [macOS VPN traffic](#macos-vpn-traffic)
+* [Android MTU/MSS issues](#android-mtumss-issues)
 * [Android 6 and 7](#android-6-and-7)
-* [iOS 13 and macOS 10.15](#ios-13-and-macos-1015)
+* [macOS send traffic over VPN](#macos-send-traffic-over-vpn)
+* [iOS 13/14 and macOS 10.15/11](#ios-1314-and-macos-101511)
 * [iOS/Android sleep mode](#iosandroid-sleep-mode)
 * [Debian 10 kernel](#debian-10-kernel)
 * [Chromebook issues](#chromebook-issues)
-* [Access VPN server's subnet](#access-vpn-servers-subnet)
 * [Other errors](#other-errors)
-* [Additional steps](#additional-steps)
+* [Check logs and VPN status](#check-logs-and-vpn-status)
 
 ### Windows Error 809
 
@@ -222,13 +228,13 @@ First check <a href="https://github.com/nm-l2tp/network-manager-l2tp/wiki/Prebui
 
 To fix this error, a <a href="https://documentation.meraki.com/MX-Z/Client_VPN/Troubleshooting_Client_VPN#Windows_Error_809" target="_blank">one-time registry change</a> is required because the VPN server and/or client is behind NAT (e.g. home router). Download and import the `.reg` file below, or run the following from an <a href="http://www.winhelponline.com/blog/open-elevated-command-prompt-windows/" target="_blank">elevated command prompt</a>. **You must reboot your PC when finished.**
 
-- For Windows Vista, 7, 8.x and 10 ([download .reg file](https://static.ls20.com/reg-files/v1/Fix_VPN_Error_809_Windows_Vista_7_8_10_Reboot_Required.reg))
+- For Windows Vista, 7, 8.x and 10 ([download .reg file](https://dl.ls20.com/reg-files/v1/Fix_VPN_Error_809_Windows_Vista_7_8_10_Reboot_Required.reg))
 
   ```console
   REG ADD HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent /v AssumeUDPEncapsulationContextOnSendRule /t REG_DWORD /d 0x2 /f
   ```
 
-- For Windows XP ONLY ([download .reg file](https://static.ls20.com/reg-files/v1/Fix_VPN_Error_809_Windows_XP_ONLY_Reboot_Required.reg))
+- For Windows XP ONLY ([download .reg file](https://dl.ls20.com/reg-files/v1/Fix_VPN_Error_809_Windows_XP_ONLY_Reboot_Required.reg))
 
   ```console
   REG ADD HKLM\SYSTEM\CurrentControlSet\Services\IPSec /v AssumeUDPEncapsulationContextOnSendRule /t REG_DWORD /d 0x2 /f
@@ -236,7 +242,7 @@ To fix this error, a <a href="https://documentation.meraki.com/MX-Z/Client_VPN/T
 
 Although uncommon, some Windows systems disable IPsec encryption, causing the connection to fail. To re-enable it, run the following command and reboot your PC.
 
-- For Windows XP, Vista, 7, 8.x and 10 ([download .reg file](https://static.ls20.com/reg-files/v1/Fix_VPN_Error_809_Allow_IPsec_Reboot_Required.reg))
+- For Windows XP, Vista, 7, 8.x and 10 ([download .reg file](https://dl.ls20.com/reg-files/v1/Fix_VPN_Error_809_Allow_IPsec_Reboot_Required.reg))
 
   ```console
   REG ADD HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters /v ProhibitIpSec /t REG_DWORD /d 0x0 /f
@@ -278,11 +284,26 @@ After upgrading Windows 10 version (e.g. from 1709 to 1803), you may need to re-
 
 Windows 8.x and 10 use "smart multi-homed name resolution" by default, which may cause "DNS leaks" when using the native IPsec VPN client if your DNS servers on the Internet adapter are from the local network segment. To fix, you may either <a href="https://www.neowin.net/news/guide-prevent-dns-leakage-while-using-a-vpn-on-windows-10-and-windows-8/" target="_blank">disable smart multi-homed name resolution</a>, or configure your Internet adapter to use DNS servers outside your local network (e.g. 8.8.8.8 and 8.8.4.4). When finished, <a href="https://support.opendns.com/hc/en-us/articles/227988627-How-to-clear-the-DNS-Cache-" target="_blank">clear the DNS cache</a> and reboot your PC.
 
-In addition, if your computer has IPv6 enabled, all IPv6 traffic (including DNS queries) will bypass the VPN. Learn how to <a href="https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users" target="_blank">disable IPv6</a> in Windows.
+In addition, if your computer has IPv6 enabled, all IPv6 traffic (including DNS queries) will bypass the VPN. Learn how to <a href="https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users" target="_blank">disable IPv6</a> in Windows. If you need a VPN with IPv6 support, you could instead try <a href="https://github.com/Nyr/openvpn-install" target="_blank">OpenVPN</a>.
 
-### macOS VPN traffic
+### Android MTU/MSS issues
 
-OS X (macOS) users: If you can successfully connect using IPsec/L2TP mode, but your public IP does not show `Your VPN Server IP`, read the [OS X](#os-x) section above and complete this step: Click the **Advanced** button and make sure the **Send all traffic over VPN connection** checkbox is checked. Then re-connect the VPN.
+Some Android devices have MTU/MSS issues, that they are able to connect to the VPN using IPsec/XAuth ("Cisco IPsec") mode, but cannot open websites. If you encounter this problem, try running the following commands on the VPN server. If successful, you may add these commands to `/etc/rc.local` to persist after reboot.
+
+```
+iptables -t mangle -A FORWARD -m policy --pol ipsec --dir in \
+  -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 \
+  -j TCPMSS --set-mss 1360
+iptables -t mangle -A FORWARD -m policy --pol ipsec --dir out \
+  -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 \
+  -j TCPMSS --set-mss 1360
+
+echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
+```
+
+**Docker users:** Instead of running the commands above, you may apply this fix by adding `VPN_ANDROID_MTU_FIX=yes` to <a href="https://github.com/hwdsl2/docker-ipsec-vpn-server#how-to-use-this-image" target="_blank">your env file</a>, then re-create the Docker container.
+
+References: <a href="https://wiki.strongswan.org/projects/strongswan/wiki/ForwardingAndSplitTunneling#MTUMSS-issues" target="_blank">[1]</a> <a href="https://www.zeitgeist.se/2013/11/26/mtu-woes-in-ipsec-tunnels-how-to-fix/" target="_blank">[2]</a>.
 
 ### Android 6 and 7
 
@@ -291,43 +312,42 @@ If your Android 6.x or 7.x device cannot connect, try these steps:
 1. Tap the "Settings" icon next to your VPN profile. Select "Show advanced options" and scroll down to the bottom. If the option "Backward compatible mode" exists (see image below), enable it and reconnect the VPN. If not, try the next step.
 1. Edit `/etc/ipsec.conf` on the VPN server. Find the line `sha2-truncbug` and toggle its value. i.e. Replace `sha2-truncbug=no` with `sha2-truncbug=yes`, or replace `sha2-truncbug=yes` with `sha2-truncbug=no`. Save the file and run `service ipsec restart`. Then reconnect the VPN.
 
+**Docker users:** You may set `sha2-truncbug=yes` (default is `no`) in `/etc/ipsec.conf` by adding `VPN_SHA2_TRUNCBUG=yes` to <a href="https://github.com/hwdsl2/docker-ipsec-vpn-server#how-to-use-this-image" target="_blank">your env file</a>, then re-create the Docker container.
+
 ![Android VPN workaround](images/vpn-profile-Android.png)
 
-### iOS 13 and macOS 10.15
+### macOS send traffic over VPN
 
-If your iOS 13 or macOS 10.15 (Catalina) device cannot connect, try these steps: Edit `/etc/ipsec.conf` on the VPN server. Find `sha2-truncbug=yes` and replace it with `sha2-truncbug=no`. Save the file and run `service ipsec restart`. Then reconnect the VPN.
+OS X (macOS) users: If you can successfully connect using IPsec/L2TP mode, but your public IP does not show `Your VPN Server IP`, read the [OS X](#os-x) section above and complete these steps. Save VPN configuration and re-connect.
+
+1. Click the **Advanced** button and make sure the **Send all traffic over VPN connection** checkbox is checked.
+1. Click the **TCP/IP** tab, and make sure **Link-local only** is selected in the **Configure IPv6** section.
+
+After trying the steps above, if your computer is still not sending traffic over the VPN, check the service order. From the main network preferences screen, select "set service order" in the cog drop down under the list of connections. Drag the VPN connection to the top.
+
+### iOS 13/14 and macOS 10.15/11
+
+If your iOS 13/14, macOS 10.15 (Catalina) or macOS 11 (Big Sur) device cannot connect, try these steps: Edit `/etc/ipsec.conf` on the VPN server. Find `sha2-truncbug=yes` and replace it with `sha2-truncbug=no`. Save the file and run `service ipsec restart`. Then reconnect the VPN.
+
+In addition, users running macOS Big Sur 11.0 should update to version 11.1 or newer, to fix some issues with VPN connections. To check your macOS version and update, refer to <a href="https://www.businessinsider.com/how-to-check-mac-os-version" target="_blank">this article</a>.
 
 ### iOS/Android sleep mode
 
-To save battery, iOS devices (iPhone/iPad) will automatically disconnect Wi-Fi shortly after the screen turns off (sleep mode). As a result, the IPsec VPN disconnects. This behavior is <a href="https://discussions.apple.com/thread/2333948" target="_blank">by design</a> and cannot be configured. If you need the VPN to auto-reconnect when the device wakes up, try <a href="https://github.com/Nyr/openvpn-install" target="_blank">OpenVPN</a> instead, which <a href="https://docs.openvpn.net/connecting/connecting-to-access-server-with-apple-ios/faq-regarding-openvpn-connect-ios/" target="_blank">has support for options</a> such as "Reconnect on Wakeup" and "Seamless Tunnel".
+To save battery, iOS devices (iPhone/iPad) will automatically disconnect Wi-Fi shortly after the screen turns off (sleep mode). As a result, the IPsec VPN disconnects. This behavior is <a href="https://discussions.apple.com/thread/2333948" target="_blank">by design</a> and cannot be configured.
 
-Android devices will also disconnect Wi-Fi shortly after entering sleep mode, unless the option "Keep Wi-Fi on during sleep" is enabled. This option is no longer available in Android 8 (Oreo). Alternatively, you may try enabling the "Always-on VPN" option to stay connected. Learn more <a href="https://support.google.com/android/answer/9089766?hl=en" target="_blank">here</a>.
+If you need the VPN to auto-reconnect when the device wakes up, you may <a href="ikev2-howto.md" target="_blank">set up IKEv2</a> and enable the "VPN On Demand" feature. Alternatively, you may try <a href="https://github.com/Nyr/openvpn-install" target="_blank">OpenVPN</a> instead, which <a href="https://docs.openvpn.net/connecting/connecting-to-access-server-with-apple-ios/faq-regarding-openvpn-connect-ios/" target="_blank">has support for options</a> such as "Reconnect on Wakeup" and "Seamless Tunnel".
+
+Android devices will also disconnect Wi-Fi shortly after entering sleep mode, unless the option "Keep Wi-Fi on during sleep" is enabled. This option is no longer available in Android 8 (Oreo) and newer. Alternatively, you may try enabling the "Always-on VPN" option to stay connected. Learn more <a href="https://support.google.com/android/answer/9089766?hl=en" target="_blank">here</a>.
 
 ### Debian 10 kernel
 
-Debian 10 users: Run `uname -r` to check your server's Linux kernel version. If it contains the word "cloud", and `/dev/ppp` is missing, then the kernel lacks `ppp` support and cannot use IPsec/L2TP mode ([IPsec/XAuth mode](clients-xauth.md) is not affected).
+Debian 10 users: Run `uname -r` to check your server's Linux kernel version. If it contains the word "cloud", and `/dev/ppp` is missing, then the kernel lacks `ppp` support and cannot use IPsec/L2TP mode. The VPN setup scripts try to detect this and show an error.
 
-To fix, you may switch to the standard Linux kernel by installing e.g. the `linux-image-amd64` package. Then update the default kernel in GRUB and reboot.
+To fix, you may switch to the standard Linux kernel by installing e.g. the `linux-image-amd64` package. Then update the default kernel in GRUB and reboot your server. Finally, re-run the VPN setup script.
 
 ### Chromebook issues
 
 Chromebook users: If you are unable to connect, try these steps: Edit `/etc/ipsec.conf` on the VPN server. Find the line `phase2alg=...` and append `,aes_gcm-null` at the end. Save the file and run `service ipsec restart`.
-
-### Access VPN server's subnet
-
-If you wish to allow VPN clients to access the VPN server's subnet, you'll need to manually add IPTables rules after setting up the VPN server. For example, if the subnet is `192.168.0.0/24`:
-
-```
-# For IPsec/L2TP
-iptables -I FORWARD 2 -i ppp+ -d 192.168.0.0/24 -j ACCEPT
-iptables -I FORWARD 2 -s 192.168.0.0/24 -o ppp+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
-# For IPsec/XAuth ("Cisco IPsec")
-iptables -I FORWARD 2 -s 192.168.43.0/24 -d 192.168.0.0/24 -j ACCEPT
-iptables -I FORWARD 2 -s 192.168.0.0/24 -d 192.168.43.0/24 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-```
-
-To make these IPTables rules persist after reboot, you may add them to file `/etc/iptables.rules` and/or `/etc/iptables/rules.v4` (Ubuntu/Debian), or `/etc/sysconfig/iptables` (CentOS/RHEL).
 
 ### Other errors
 
@@ -335,12 +355,11 @@ If you encounter other errors, refer to the links below:
 
 * http://www.tp-link.com/en/faq-1029.html
 * https://documentation.meraki.com/MX-Z/Client_VPN/Troubleshooting_Client_VPN#Common_Connection_Issues   
-* https://blogs.technet.microsoft.com/rrasblog/2009/08/12/troubleshooting-common-vpn-related-errors/   
 * https://stackoverflow.com/questions/25245854/windows-8-1-gets-error-720-on-connect-vpn
 
-### Additional steps
+### Check logs and VPN status
 
-Please try these additional troubleshooting steps:
+Commands below must be run as `root` (or using `sudo`).
 
 First, restart services on the VPN server:
 
@@ -349,7 +368,7 @@ service ipsec restart
 service xl2tpd restart
 ```
 
-If using Docker, run `docker restart ipsec-vpn-server`.
+**Docker users:** Run `docker restart ipsec-vpn-server`.
 
 Then reboot your VPN client device, and retry the connection. If still unable to connect, try removing and recreating the VPN connection, by following the instructions in this document. Make sure that the VPN credentials are entered correctly.
 
@@ -360,7 +379,7 @@ Check the Libreswan (IPsec) and xl2tpd logs for errors:
 grep pluto /var/log/auth.log
 grep xl2tpd /var/log/syslog
 
-# CentOS & RHEL
+# CentOS/RHEL & Amazon Linux 2
 grep pluto /var/log/secure
 grep xl2tpd /var/log/messages
 ```
@@ -380,21 +399,21 @@ ipsec whack --trafficstatus
 
 ## Configure Linux VPN clients using the command line
 
-Instructions below are based on [the work of Peter Sanford](https://gist.github.com/psanford/42c550a1a6ad3cb70b13e4aaa94ddb1c). Commands must be run as `root` on your VPN client.
+After <a href="https://github.com/hwdsl2/setup-ipsec-vpn" target="_blank">setting up your own VPN server</a>, follow these steps to configure Linux VPN clients using the command line. Alternatively, you may configure [using the GUI](#linux). Instructions below are based on [the work of Peter Sanford](https://gist.github.com/psanford/42c550a1a6ad3cb70b13e4aaa94ddb1c). Commands must be run as `root` on your VPN client.
 
 To set up the VPN client, first install the following packages:
 
 ```bash
 # Ubuntu & Debian
 apt-get update
-apt-get -y install strongswan xl2tpd
+apt-get -y install strongswan xl2tpd net-tools
 
 # CentOS & RHEL
 yum -y install epel-release
-yum --enablerepo=epel -y install strongswan xl2tpd
+yum --enablerepo=epel -y install strongswan xl2tpd net-tools
 
 # Fedora
-yum -y install strongswan xl2tpd
+yum -y install strongswan xl2tpd net-tools
 ```
 
 Create VPN variables (replace with actual values):
@@ -412,35 +431,17 @@ Configure strongSwan:
 cat > /etc/ipsec.conf <<EOF
 # ipsec.conf - strongSwan IPsec configuration file
 
-# basic configuration
-
-config setup
-  # strictcrlpolicy=yes
-  # uniqueids = no
-
-# Add connections here.
-
-# Sample VPN connections
-
-conn %default
-  ikelifetime=60m
-  keylife=20m
-  rekeymargin=3m
-  keyingtries=1
-  keyexchange=ikev1
-  authby=secret
-  ike=aes128-sha1-modp2048!
-  esp=aes128-sha1-modp2048!
-
 conn myvpn
-  keyexchange=ikev1
-  left=%defaultroute
   auto=add
+  keyexchange=ikev1
   authby=secret
   type=transport
+  left=%defaultroute
   leftprotoport=17/1701
   rightprotoport=17/1701
   right=$VPN_SERVER_IP
+  ike=aes128-sha1-modp2048
+  esp=aes128-sha1
 EOF
 
 cat > /etc/ipsec.secrets <<EOF
@@ -480,8 +481,8 @@ noipdefault
 defaultroute
 usepeerdns
 connect-delay 5000
-name $VPN_USER
-password $VPN_PASSWORD
+name "$VPN_USER"
+password "$VPN_PASSWORD"
 EOF
 
 chmod 600 /etc/ppp/options.l2tpd.client
@@ -583,7 +584,7 @@ This document was adapted from the <a href="https://github.com/StreisandEffect/s
 
 Note: This license applies to this document only.
 
-Copyright (C) 2016-2019 Lin Song   
+Copyright (C) 2016-2021 Lin Song   
 Based on <a href="https://github.com/StreisandEffect/streisand/blob/6aa6b6b2735dd829ca8c417d72eb2768a89b6639/playbooks/roles/l2tp-ipsec/templates/instructions.md.j2" target="_blank">the work of Joshua Lund</a> (Copyright 2014-2016)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl.html" target="_blank">GNU General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
